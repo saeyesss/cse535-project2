@@ -92,7 +92,7 @@ def main():
 
     extractor = HandShapeFeatureExtractor.get_instance()
     train_path = "traindata/"
-    test_path = "testdata/"
+    test_path = "test/"
 
     featureVectorList = []
     for file in sorted(os.listdir(train_path)):
