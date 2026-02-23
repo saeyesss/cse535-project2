@@ -56,11 +56,22 @@ def extract_feature(video_path, extractor):
     frame = extract_middle_frame(video_path)
     if frame is None:
         return None
-    feature = extractor.extract_feature(frame)
+
+    h, w, _ = frame.shape
+
+
+    crop_size = min(h, w)
+    start_y = (h - crop_size) // 2
+    start_x = (w - crop_size) // 2
+
+    cropped = frame[start_y:start_y + crop_size,
+                    start_x:start_x + crop_size]
+
+    feature = extractor.extract_feature(cropped)
     if feature is None:
         return None
-    return feature.flatten()
 
+    return feature.flatten()
 
 
 
