@@ -73,28 +73,19 @@ def decide_gesture_by_train_filename(filename):
     return None
 
 
-def decide_gesture_by_test_filename(filename):
-    base = os.path.splitext(filename)[0]
-    parts = base.split('-', 2)
-    if len(parts) < 3:
-        return None
-    suffix = parts[2]
-    for gd in gesture_data:
-        if suffix in gd.test_keys:
-            return gd
-    return None
-
-
 
 
 
 def main():
 
     extractor = HandShapeFeatureExtractor.get_instance()
+
     train_path = "traindata/"
     test_path = "test/"
 
-    featureVectorList = []
+    
+    class_feature_map = {}
+
     for file in sorted(os.listdir(train_path)):
         if not file.lower().endswith(".mp4"):
             continue
@@ -106,9 +97,27 @@ def main():
         video_path = os.path.join(train_path, file)
         feature = extract_feature(video_path, extractor)
 
-        if feature is not None:
+        if feature is None:
+            continue
+
+        label = gesture_detail.output_label
+
+        if label not in class_feature_map:
+            class_feature_map[label] = []
+
+        class_feature_map[label].append(feature)
+
+    
+    featureVectorList = []
+
+    for gd in gesture_data:
+        label = gd.output_label
+
+        if label in class_feature_map:
+            mean_vector = np.mean(class_feature_map[label], axis=0)
+
             featureVectorList.append(
-                GestureFeature(gesture_detail, feature)
+                GestureFeature(gd, mean_vector)
             )
 
     
