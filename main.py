@@ -5,6 +5,12 @@ import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from handshape_feature_extractor import HandShapeFeatureExtractor
 
+def l2_normalize(vector):
+    norm = np.linalg.norm(vector)
+    if norm == 0:
+        return vector
+    return vector / norm
+
 class GestureDetail:
     def __init__(self, output_label, train_keys, test_keys):
         self.output_label = output_label
@@ -126,12 +132,12 @@ def main():
 
         if label in class_feature_map:
             mean_vector = np.mean(class_feature_map[label], axis=0)
+            mean_vector = l2_normalize(mean_vector)
 
             featureVectorList.append(
                 GestureFeature(gd, mean_vector)
             )
 
-    
     results = []
 
     for test_file in sorted(os.listdir(test_path)):
@@ -145,14 +151,17 @@ def main():
             results.append(0)
             continue
 
+        test_feature = l2_normalize(test_feature)
+
         max_similarity = -1
         recognized_label = 0
 
         for fv in featureVectorList:
-            similarity = cosine_similarity(
-                test_feature.reshape(1, -1),
-                fv.extracted_feature.reshape(1, -1)
-            )[0][0]
+
+            similarity = np.dot(
+                test_feature,
+                fv.extracted_feature
+            )
 
             if similarity > max_similarity:
                 max_similarity = similarity
