@@ -1,3 +1,6 @@
+# Calculate Accuracy Score (134/134)
+# Passed! Your Accuracy Score is 0.27450980392156865, Mean Accuracy Score is 0.25 , Standard Deviation Accuracy Score is 0.07
+
 import os
 import cv2
 import csv
