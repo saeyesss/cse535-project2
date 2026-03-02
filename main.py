@@ -89,7 +89,17 @@ def decide_gesture_by_train_filename(filename):
             return gd
     return None
 
+def decide_gesture_by_test_filename(filename):
+    base = os.path.splitext(filename)[0]  
+    parts = base.split('-', 2)          
+    if len(parts) < 3:
+        return None
+    suffix = parts[2]                    
+    for gd in gesture_data:
+        if suffix in gd.test_keys:
+            return gd
 
+    return None
 
 
 
@@ -107,7 +117,7 @@ def main():
         if not file.lower().endswith(".mp4"):
             continue
 
-        gesture_detail = decide_gesture_by_train_filename(file)
+        gesture_detail = decide_gesture_by_test_filename(file)
         if gesture_detail is None:
             continue
 
